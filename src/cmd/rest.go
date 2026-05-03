@@ -18,6 +18,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 	"github.com/sirupsen/logrus"
+	"github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/autopinger"
 	"github.com/spf13/cobra"
 )
 
@@ -114,6 +115,9 @@ func restServer(_ *cobra.Command, _ []string) {
 	go helpers.SetAutoConnectAfterBooting(appUsecase)
 	// Set auto reconnect checking
 	go helpers.SetAutoReconnectChecking(whatsappCli)
+
+	// Auto pinger to keep service alive
+	autopinger.Start()
 
 	if err := app.Listen(":" + config.AppPort); err != nil {
 		logrus.Fatalln("Failed to start: ", err.Error())
