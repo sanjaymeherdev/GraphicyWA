@@ -9,14 +9,12 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-COPY src/go.mod src/go.sum ./
-RUN CGO_ENABLED=1 go mod download
-
 COPY src/ ./
 
 ENV CGO_ENABLED=1
 ENV GOOS=linux
-RUN go build -v -ldflags="-w -s" -o whatsapp .
+# Regenerate go.sum for the updated dependencies, then build
+RUN go mod tidy && go build -v -ldflags="-w -s" -o whatsapp .
 
 FROM alpine:latest
 
