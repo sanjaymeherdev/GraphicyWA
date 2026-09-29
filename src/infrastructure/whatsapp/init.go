@@ -137,6 +137,14 @@ func InitWaCLI(ctx context.Context, storeContainer, keysStoreContainer *sqlstore
 
 	// Create and configure the client
 	cli = whatsmeow.NewClient(device, waLog.Stdout("Client", config.WhatsappLogLevel, true))
+
+	// Keep the WhatsApp Web client version fresh to avoid "client outdated (405)"
+	if v, err := whatsmeow.GetLatestVersion(ctx, nil); err != nil {
+		log.Warnf("Could not fetch latest WhatsApp version, using built-in %s: %v", store.GetWAVersion(), err)
+	} else {
+		store.SetWAVersion(*v)
+		log.Infof("Using WhatsApp Web version %s", v)
+	}
 	cli.EnableAutoReconnect = true
 	cli.AutoTrustIdentity = true
 
